@@ -4,9 +4,18 @@ import { useEffect, useState } from "react"
 //dev_2_fruit
 const Products = () => {
 
+    // 화면 갱신을 위한 데이터(state)
+    // state 변수 = state가 변할 때마다 해당 컴포넌트를 다시 그림 = 다시 컴포넌트를 실행
     const [categories,setCategories] = useState([])
     
+    // useEffect 3가지 사용방법
+
+    // 1. 빈 배열: 처음 랜더링 때 한번만 호출
+    // 초기화 (__init__)
+    // 비동기 통신 안됨 (그래서 비동기 통신을 하고 싶을 경우)
+    // 비동기 통신을 하고 싶을 경우 useEffect 안에 함수를 만들어서 해당 함수 호출을 하는 형식으로 비동기 통신을 함
     useEffect(()=>{
+        //카테고리 가져오기
         getCategories()
             .then((res)=>{
                 console.log(res)
@@ -14,6 +23,28 @@ const Products = () => {
             })
             .catch((err)=>{console.log(err)})
     },[])
+
+    // 2. [categories]: categories가 변경될 때마다 실행
+    // useEffect(()=>{
+    //     //카테고리 가져오기
+    //     getCategories()
+    //         .then((res)=>{
+    //             console.log(res)
+    //             setCategories(res.data)
+    //         })
+    //         .catch((err)=>{console.log(err)})
+    // },[categories])
+
+    // 3. 컴포넌트가 리랜더링될 때마다 실행
+    // useEffect(()=>{
+    //     //카테고리 가져오기
+    //     getCategories()
+    //         .then((res)=>{
+    //             console.log(res)
+    //             setCategories(res.data)
+    //         })
+    //         .catch((err)=>{console.log(err)})
+    // })
 
 
 return(
@@ -35,54 +66,26 @@ return(
                   href="#tab-1"
                 >
                   <span className="text-dark" style={{ width: 130 }}>
-                    All Products
+                    {"전체"}
                   </span>
                 </a>
               </li>
-              <li className="nav-item">
-                <a
-                  className="d-flex py-2 m-2 bg-light rounded-pill"
-                  data-bs-toggle="pill"
-                  href="#tab-2"
-                >
-                  <span className="text-dark" style={{ width: 130 }}>
-                    Vegetables
-                  </span>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="d-flex m-2 py-2 bg-light rounded-pill"
-                  data-bs-toggle="pill"
-                  href="#tab-3"
-                >
-                  <span className="text-dark" style={{ width: 130 }}>
-                    Fruits
-                  </span>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="d-flex m-2 py-2 bg-light rounded-pill"
-                  data-bs-toggle="pill"
-                  href="#tab-4"
-                >
-                  <span className="text-dark" style={{ width: 130 }}>
-                    Bread
-                  </span>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a
-                  className="d-flex m-2 py-2 bg-light rounded-pill"
-                  data-bs-toggle="pill"
-                  href="#tab-5"
-                >
-                  <span className="text-dark" style={{ width: 130 }}>
-                    Meat
-                  </span>
-                </a>
-              </li>
+              
+              {Array.isArray(categories) && categories && categories.map((category,index)=>(
+                <li className="nav-item">
+                  <a
+                    className="d-flex py-2 m-2 bg-light rounded-pill"
+                    data-bs-toggle="pill"
+                    href="#tab-2"
+                  >
+                    <span className="text-dark" style={{ width: 130 }}>
+                      {category.name}
+                    </span>
+                  </a>
+                </li>
+              ))}
+
+
             </ul>
           </div>
         </div>
