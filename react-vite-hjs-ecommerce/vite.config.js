@@ -6,9 +6,18 @@ import path from 'path'
 // dev_1_fruit
 export default defineConfig({
   plugins: [react()],
-  resolve:{
-    alias:[
-      {find: '@',replacement:path.resolve(__dirname,'src') }
+  resolve: {
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, 'src') }
     ]
+  },
+  server: {
+    proxy: {
+      // '/api'로 시작하는 요청은 http://localhost:8000으로 프록시
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      }
+    }
   }
 })
