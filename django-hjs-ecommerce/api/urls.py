@@ -67,10 +67,7 @@ urlpatterns = [
     # path("categories/", category_list),
     # path("category/<int:pk>/", category_detail),
     path("", include(router.urls)),
+    # dev_5_Fruit
+    path("auth/", include("djoser.urls")), # 회원가입, 비밀번호 변경 등
+    path("auth/", include("djoser.urls.jwt")), # JWT 로그인/로그아웃, 토튼 갱신 등
 ]
-
-
-# from rest_framework import routers
-
-# router = routers.DefaultRouter()
-# router.register("categories", category_views.CategoryViewSet)

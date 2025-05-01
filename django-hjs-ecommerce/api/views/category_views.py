@@ -247,7 +247,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework import filters
 
-#dev_3_Fruit
+# dev_3_Fruit
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySimpleSerializer

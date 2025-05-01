@@ -1,141 +1,59 @@
-from django.test import TestCase
-import pickle
-
-# Create your tests here.
-
-
-# dev_28 시리얼라이제이션의 이해
-
-
-def add_view(num1, num2):
-    return num1 + num2
-
-
-def suv_view(num1, num2):
-    return num1 - num2
-
-
-class ObjectAPITest(TestCase):
-    def setUp(self):
-        pass
-
-    def test_path(self):
-
-        dict = {
-            "products": add_view,
-            "categories": suv_view,
-        }
-        url = "products"
-
-        print(dict[url](1, 2))
-
-        url = "sub"
-        print(dict[url](1, 2))
-
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Category
-from .serializers import CategorySerializer, CategorySimpleSerializer
-
-
-class CategoriesAPI(APIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    simple_serializer_class = CategorySimpleSerializer
-
-    def get_queryset(self):
-        return self.queryset
-
-    def get_serializer(self, *args, **kwargs):
-        return self.serializer_class(*args, **kwargs)
-
-    def get_simple_serializer(self, *args, **kwargs):
-        return self.simple_serializer_class(*args, **kwargs)
-
-    def get(self, request):
-        categories = self.get_queryset()
-        serializer = self.get_serializer(categories, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = self.get_simple_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        # 예: id를 request에서 받았다고 가정
-        category_id = request.data.get("id")
-        try:
-            category = self.get_queryset().get(id=category_id)
-        except Category.DoesNotExist:
-            return Response(
-                {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = self.get_simple_serializer(category, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request):
-        category_id = request.data.get("id")
-        try:
-            category = self.get_queryset().get(id=category_id)
-            category.delete()
-            return Response(
-                {"message": "Category deleted"}, status=status.HTTP_204_NO_CONTENT
-            )
-        except Category.DoesNotExist:
-            return Response(
-                {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-
-# class ProductRetrieveByIdOrNameView(RetrieveAPIView):
-#     serializer_class = ProductSerializer
-
-#     def get_object(self):
-#         queryset = Product.objects.all()
-#         lookup_id = self.kwargs.get("id")
-#         lookup_name = self.kwargs.get("name")
-
-#         if lookup_id:
-#             return queryset.get(id=lookup_id)
-#         elif lookup_name:
-#             return queryset.get(name=lookup_name)
-#         else:
-#             raise NotFound("id 또는 name 파라미터가 필요합니다.")
-
 # Create your tests here.
 from django.test import TestCase
 import jwt
 
 
-from django.test import TestCase
-from django.contrib.auth.hashers import make_password, check_password
-from cryptography.fernet import Fernet
+# dev_5_Fruit
+# 🔍 해석
+# 필드	          의미	                 값 해석
+# exp	Expiration Time (만료 시간)	1744884869 → UTC 기준 2025-05-17 07:34:29 에 토큰 만료
+# iat	Issued At (발급 시각)	1744280069 → UTC 기준 2025-05-10 07:34:29 에 토큰 발급
+# jti	JWT ID (토큰 고유 ID)	"01fdf4faad8c4a17bd9f038aeb052d5b" → 이 토큰을 식별하기 위한 고유한 ID (무작위 UUID처럼 사용)
 
-#dev_12_Fruit
-class HashAndEncryptionTestCase(TestCase):
 
-    def test_one_way_hash(self):
-        """단방향 해시 테스트"""
-        original_password = "my_secret_password"
+class ApiTest(TestCase):
+    def test_jwt_decode_access_token(self):
+        access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NjY2Nzg2MSwiaWF0IjoxNzQ2MDYzMDYxLCJqdGkiOiI1ZTkzODE4YjYxNjY0ZjdhYjU1ODA4NTJmNjdkOGZkNSIsInVzZXJfaWQiOjF9.Cvwy_cC1FHSt5yCAirQSzGmnTcAK4fKsZp2ifHVTdUA"
 
-        # 비밀번호 해시
-        hashed_password = make_password(original_password)
+        refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MzIyMjYxLCJpYXQiOjE3NDYwNjMwNjEsImp0aSI6IjE1OWM1NzBiMmNkYTRiNGVhMmE0NGM1YWE4MmQ4MjhmIiwidXNlcl9pZCI6MX0.CrYqoQ5sQ5D3tsfu6rVfM-jgOe_WlK1VgeuFWJuGJTo"
 
-        print(hashed_password)
-        # 해시된 값은 원본과 다름
-        self.assertNotEqual(original_password, hashed_password)
+        print("\n▶ ACCESS TOKEN 디코딩 결과:")
+        access_decoded = jwt.decode(access_token, options={"verify_signature": False})
+        for key, value in access_decoded.items():
+            print(f"{key}: {value}")
 
-        # check_password로만 원본과 같은지 검증 가능
-        self.assertTrue(check_password(original_password, hashed_password))
-        self.assertFalse(check_password("wrong_password", hashed_password))
+        print("\n▶ REFRESH TOKEN 디코딩 결과:")
+        refresh_decoded = jwt.decode(refresh_token, options={"verify_signature": False})
+        for key, value in refresh_decoded.items():
+            print(f"{key}: {value}")
 
-   
+        # 기본적인 체크
+        self.assertEqual(access_decoded["token_type"], "access")
+        self.assertEqual(refresh_decoded["token_type"], "refresh")
+        self.assertEqual(access_decoded["user_id"], 1)
+        self.assertEqual(refresh_decoded["user_id"], 1)
+
+
+from rest_framework.test import APITestCase
+from rest_framework import status
+
+
+class UserMeAPITest(APITestCase):
+    def setUp(self):
+        # 이미 발급받은 토큰을 여기에 넣으세요
+        self.access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MjgzMTcyLCJpYXQiOjE3NDQyODEzNzIsImp0aSI6ImQzYzE5MWYzZjRhYzQ0MmE4NTU0YzIyOGQ1ZGM5ZjhiIiwidXNlcl9pZCI6MX0.BlLTY1T1mUyB4t2BKgGE2YaY6LXnrIHfvogJ9RtB-wo"
+        self.url = "http://127.0.0.1:8000/api/auth/users/me/"
+
+    def test_get_user_me(self):
+        # Authorization 헤더에 JWT 토큰 포함
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+
+        response = self.client.get(self.url)
+
+        print("🔎 응답 JSON:", response.json())
+
+        # 테스트: 200 OK 확인
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # 테스트: 사용자 정보에 username 포함 여부
+        self.assertIn("username", response.data)
