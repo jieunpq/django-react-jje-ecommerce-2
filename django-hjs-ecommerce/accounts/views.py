@@ -10,6 +10,12 @@ from accounts.models import User
 import json
 from cart.cart import Cart
 from store.models import Product
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth import get_user_model
+from .serializers import UserSerializer  # 혹은 경로에 맞게 수정
+
 
 # Create your views here.
 

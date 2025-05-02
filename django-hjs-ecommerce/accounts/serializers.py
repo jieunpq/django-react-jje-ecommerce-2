@@ -18,9 +18,9 @@ class UserCreateSerializer(BaseUserCreateSerializer):
         )
 
 class UserSerializer(BaseUserSerializer):
-    class Meta(BaseUserSerializer):
+    class Meta(BaseUserSerializer.Meta):  # 여기도 `.Meta` 붙여야 합니다
         model = User
-        field = (
+        fields = (
             "id", 
             "username",
             "email",
